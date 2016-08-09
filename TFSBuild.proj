@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- DO NOT EDIT the project element - the ToolsVersion specified here does not prevent the solutions 
+	 and projects in the SolutionToBuild item group from targeting other versions of the .NET framework. 
+	 -->
+<Project DefaultTargets="DesktopBuild" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+
+  <!-- Do not edit this -->
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\VisualStudio\TeamBuild\Microsoft.TeamFoundation.Build.targets" />
+
+  <!-- CodePlex Build Tasks -->
+
+  <Import Project="$(MSBuildExtensionsPath)\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks"/>
+
+  <ProjectExtensions>
+
+    <!-- Team Foundation Build Version - DO NOT CHANGE -->
+    <ProjectFileVersion>2</ProjectFileVersion>
+
+
+  </ProjectExtensions>
+
+  <PropertyGroup>
+
+    <!--  TESTING
+	 Set this flag to enable/disable running tests as a post-compilation build step.
+	-->
+    <RunTest>true</RunTest>
+
+    <!--  CODE ANALYSIS
+	 Set this property to enable/disable running code analysis. Valid values for this property are 
+	 Default, Always and Never.
+
+		 Default - Perform code analysis as per the individual project settings
+		 Always  - Always perform code analysis irrespective of project settings
+		 Never   - Never perform code analysis irrespective of project settings
+	 -->
+    <RunCodeAnalysis>Default</RunCodeAnalysis>
+
+    <!-- Additional Properties -->
+
+    <!--  WorkItemType
+	 The type of the work item created on a build failure. 
+	 -->
+    <WorkItemType>Bug</WorkItemType>
+
+    <!--  WorkItemFieldValues
+	 Fields and values of the work item created on a build failure.
+	 
+	 Note: Use reference names for fields if you want the build to be resistant to field name 
+	 changes. Reference names are language independent while friendly names are changed depending 
+	 on the installed language. For example, "System.Reason" is the reference name for the "Reason" 
+	 field.
+	 -->
+    <WorkItemFieldValues>System.Reason=Build Failure;System.Description=Start the build using Team Build</WorkItemFieldValues>
+
+    <!--  WorkItemTitle
+	 Title of the work item created on build failure.
+	 -->
+    <WorkItemTitle>Build failure in build:</WorkItemTitle>
+
+    <!--  DescriptionText
+	 History comment of the work item created on a build failure. 
+	 -->
+    <DescriptionText>This work item was created by Team Build on a build failure.</DescriptionText>
+
+    <!--  BuildLogText
+	 Additional comment text for the work item created on a build failure.
+	 -->
+    <BuildlogText>The build log file is at:</BuildlogText>
+
+    <!--  ErrorWarningLogText
+	 Additional comment text for the work item created on a build failure. 
+	 This text will only be added if there were errors or warnings.
+	 -->
+    <ErrorWarningLogText>The errors/warnings log file is at:</ErrorWarningLogText>
+
+    <!--  UpdateAssociatedWorkItems
+	 Set this flag to enable/disable updating associated workitems on a successful build.
+	 -->
+    <UpdateAssociatedWorkItems>true</UpdateAssociatedWorkItems>
+
+    <!--  AdditionalVCOverrides
+	 Additional text for the VCOverrides file generated for VC++ projects.
+	 -->
+    <AdditionalVCOverrides></AdditionalVCOverrides>
+
+    <!--  CustomPropertiesForClean
+	 Custom properties to pass to the MSBuild task while calling the "Clean" target for all solutions.
+	 The format should be: PropertyName1=value1;PropertyName2=value2;...
+	 -->
+    <CustomPropertiesForClean></CustomPropertiesForClean>
+
+    <!--  CustomPropertiesForBuild
+	 Custom properties to pass to the MSBuild task while calling the default targets for all solutions.
+	 The format should be: Property1=value1;Property2=value2;...  To pass custom properties to
+	 individual solutions, use the Properties metadata item of the SolutionToBuild ItemGroup.
+	 -->
+    <CustomPropertiesForBuild></CustomPropertiesForBuild>
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--  SOLUTIONS
+	 The paths of the solutions to build. Paths can be server paths or local paths, but server paths
+	 relative to the location of this file are highly recommended.  To add/delete solutions, edit this 
+	 ItemGroup. For example, to add a solution MySolution.sln, add the following line:
+		 
+		 <SolutionToBuild Include="$(BuildProjectFolderPath)/path/MySolution.sln" />
+
+	 To change the order in which the solutions are built, modify the order in which the solutions 
+	 appear below.
+	 
+	 To call a target (or targets) other than the default, add a metadata item named Targets.  To pass 
+	 custom properties to the solution, add a metadata item named Properties.  For example, to call 
+	 the targets MyCustomTarget1 and MyCustomTarget2, passing in properties Property1 and Property2, 
+	 add the following:
+		 
+		 <SolutionToBuild Include="$(BuildProjectFolderPath)/path/MySolution.sln">
+			 <Targets>MyCustomTarget1;MyCustomTarget2</Targets>
+			 <Properties>Property1=Value1;Property2=Value2</Properties>
+		 </SolutionToBuild>
+	-->
+    <SolutionToBuild Include="$(BuildProjectFolderPath)/../../Main/Source/HelloAppModel.sln">
+      <Targets></Targets>
+      <Properties></Properties>
+    </SolutionToBuild>
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--  CONFIGURATIONS
+	 The list of configurations to build. To add/delete configurations, edit this value. For example, 
+	 to add a new configuration, add the following lines:
+		 
+		 <ConfigurationToBuild Include="Debug|x86">
+			 <FlavorToBuild>Debug</FlavorToBuild>
+			 <PlatformToBuild>x86</PlatformToBuild>
+		 </ConfigurationToBuild>
+
+	 The Include attribute value should be unique for each ConfigurationToBuild node.
+	-->
+    <ConfigurationToBuild Include="Dev|Any CPU">
+      <FlavorToBuild>Dev</FlavorToBuild>
+      <PlatformToBuild>Any CPU</PlatformToBuild>
+    </ConfigurationToBuild>
+
+  </ItemGroup>
+
+  <ItemGroup>
+    <!--  TEST ARGUMENTS
+	 If the RunTest property is set to true then the following test arguments will be used to run 
+	 tests. Tests can be run by specifying one or more test lists and/or one or more test containers.
+	 
+	 To run tests using test lists, add MetaDataFile items and associated TestLists here.  Paths can 
+	 be server paths or local paths, but server paths relative to the location of this file are highly 
+	 recommended:
+	 
+		<MetaDataFile Include="$(BuildProjectFolderPath)/HelloWorld/HelloWorld.vsmdi">
+			<TestList>BVT1;BVT2</TestList>
+		</MetaDataFile>
+
+	 To run tests using test containers, add TestContainer items here:
+	 
+		<TestContainer Include="$(OutDir)\HelloWorldTests.dll" />
+		<TestContainer Include="$(SolutionRoot)\TestProject\WebTest1.webtest" />
+		<TestContainer Include="$(SolutionRoot)\TestProject\LoadTest1.loadtest" />
+
+	 Use %2a instead of * and %3f instead of ? to prevent expansion before test assemblies are built
+	-->
+    <TestContainer Include="$(OutDir)\Test%2a.dll" />
+
+  </ItemGroup>
+
+  <PropertyGroup>
+    <!-- TEST ARGUMENTS
+	 If the RunTest property is set to true, then particular tests within a
+	 metadata file or test container may be specified here.  This is
+	 equivalent to the /test switch on mstest.exe.
+
+	 <TestNames>BVT;HighPriority</TestNames>
+	-->
+
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!--  ADDITIONAL REFERENCE PATH
+	 The list of additional reference paths to use while resolving references. For example:
+	 
+		 <AdditionalReferencePath Include="C:\MyFolder\" />
+		 <AdditionalReferencePath Include="C:\MyFolder2\" />
+	-->
+  </ItemGroup>
+
+  <PropertyGroup>
+    <DeployToDevIis>true</DeployToDevIis>
+    <WebSitePublishDir>_PublishedWebsites\HelloAppModel</WebSitePublishDir>
+    <DeployUncPath1>\\dvas14a\e$\InetPub\wwwroot\HelloAppModel</DeployUncPath1>
+
+    <MyPhysicalPath>E:\InetPub\wwwroot\HelloAppModel</MyPhysicalPath>
+
+    <DevServer1>dvas14a</DevServer1>
+    <AppPool>HelloAppModel</AppPool>
+    <VirtualDir>HelloAppModel</VirtualDir>
+
+  </PropertyGroup>
+
+  <Target Name="AfterCompile" Condition="'$(BuildBreak)' != 'true' And '$(DeployToDevIis)'=='true'">
+
+    <BuildStep TeamFoundationServerUrl="$(TeamFoundationServerUrl)"
+				BuildUri="$(BuildUri)" Message="Deploying $(VirtualDir) to $(DevServer1) IIS">
+      <Output TaskParameter="Id" PropertyName="StepId" />
+    </BuildStep>
+
+    <ItemGroup>
+      <WebSiteFiles Include="$(OutDir)$(WebSitePublishDir)\**\*" />
+    </ItemGroup>
+    <ItemGroup>
+      <IisFiles Include="$(DeployUncPath1)**\*" />
+    </ItemGroup>
+
+    <Message Text="Weston Build: BuildDirectory : $(BuildDirectory)" />
+    <Message Text="Weston Build: DeployUncPath1: $(DeployUncPath1)" />
+    <Message Text="Weston Build: WebSitePublishDir: $(WebSitePublishDir)" />
+
+    <!--Check to see if the AppPool Exists or Not-->
+
+    <!--<MSBuild.ExtensionPack.Web.Iis7AppPool
+			MachineName="$(DevServer1)" TaskAction="CheckExists" Name="$(AppPool)">
+			<Output PropertyName="AppPoolDoesExist" TaskParameter="Exists" />
+		</MSBuild.ExtensionPack.Web.Iis7AppPool>
+
+		<Message Text="Weston Build: $(AppPool) App Pool exists on $(DevServer1): $(AppPoolDoesExist)"/>-->
+
+    <!--if the app pool does not exist create one-->
+    <!--<Message Condition="'$(AppPoolDoesExist)'=='false'" Text="Weston Build: Creating AppPool $(AppPool) on $(DevServer1)"/>
+
+		<MSBuild.ExtensionPack.Web.Iis7AppPool TaskAction="Create"
+							Condition="'$(AppPoolDoesExist)'=='false'"
+							Name="$(AppPool)"
+							MachineName="$(DevServer1)"
+						/>
+
+		<ItemGroup>
+			<Application Include="/$(VirtualDir)">
+				<PhysicalPath>$(MyPhysicalPath)</PhysicalPath>
+				<AppPool>$(AppPool)</AppPool>
+			</Application>
+		</ItemGroup>-->
+
+    <!--Check to see if the application exists in the default web site-->
+    <!--<MSBuild.ExtensionPack.Web.Iis7Application TaskAction="CheckExists" Website="Default Web Site" 
+				MachineName="$(DevServer1)"
+				Applications="/$(VirtualDir)">
+			<Output TaskParameter="Exists" PropertyName="AppExists"/>
+		</MSBuild.ExtensionPack.Web.Iis7Application>
+
+		<Message Text="Weston Build: Application exists on $(DevServer1)? $(AppExists)"/>-->
+
+    <!--if the application doesn't exist, create it-->
+
+    <!--<MSBuild.ExtensionPack.Web.Iis7Website  Condition="'$(AppExists)'=='false'"
+			MachineName="$(DevServer1)" 
+			TaskAction="AddApplication"
+			Name="Default Web Site" 
+			Applications="@(Application)" 
+			ContinueOnError="true"/>-->
+
+    <Message Text="Weston Build: Removing $(DeployUncPath1)" />
+
+    <!-- Remove all content from a folder whilst maintaining the target folder -->
+    <MSBuild.ExtensionPack.FileSystem.Folder Condition="Exists($(DeployUncPath1))" TaskAction="RemoveContent" Path="$(DeployUncPath1)"/>
+
+    <!--Deploy new build-->
+
+    <Message Text="Weston Build: Copying Over New Build" />
+
+    <Copy Condition="'$(BuildBreak)' != 'true'" SourceFiles="@(WebSiteFiles)"
+				DestinationFiles="@(WebSiteFiles->'$(DeployUncPath1)\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+    <BuildStep TeamFoundationServerUrl="$(TeamFoundationServerUrl)"
+					BuildUri="$(BuildUri)" Id="$(StepId)" Status="Succeeded" />
+
+    <!--Second Server-->
+
+    <!--<MSBuild.ExtensionPack.Web.Iis7AppPool
+			MachineName="$(DevServer2)" TaskAction="CheckExists" Name="$(AppPool)">
+			<Output PropertyName="AppPoolDoesExist" TaskParameter="Exists" />
+		</MSBuild.ExtensionPack.Web.Iis7AppPool>-->
+
+    <!--<Message Text="Weston Build: $(AppPool) App Pool exists on $(DevServer2): $(AppPoolDoesExist)"/>-->
+
+    <!--if the app pool does not exist create one-->
+    <!--<Message Condition="'$(AppPoolDoesExist)'=='false'" Text="Weston Build: Creating AppPool $(AppPool) on $(DevServer2)"/>
+
+		<MSBuild.ExtensionPack.Web.Iis7AppPool TaskAction="Create"
+							Condition="'$(AppPoolDoesExist)'=='false'"
+							Name="$(AppPool)"
+							MachineName="$(DevServer2)"
+							/>
+
+		<ItemGroup>
+			<Application Include="/$(VirtualDir)">
+				<PhysicalPath>$(MyPhysicalPath)</PhysicalPath>
+				<AppPool>$(AppPool)</AppPool>
+			</Application>
+		</ItemGroup>-->
+
+    <!--Check to see if the application exists in the default web site-->
+    <!--<MSBuild.ExtensionPack.Web.Iis7Application TaskAction="CheckExists" Website="Default Web Site"
+				MachineName="$(DevServer2)"
+				Applications="/$(VirtualDir)">
+			<Output TaskParameter="Exists" PropertyName="AppExists"/>
+		</MSBuild.ExtensionPack.Web.Iis7Application>-->
+
+    <!--<Message Text="Weston Build: Application exists on $(DevServer2)? $(AppExists)"/>-->
+
+    <!--if the application doesn't exist, create it-->
+
+    <!--<MSBuild.ExtensionPack.Web.Iis7Website  Condition="'$(AppExists)'=='false'"
+			TaskAction="AddApplication"
+			MachineName="$(DevServer2)"
+			Name="Default Web Site"
+			Applications="@(Application)"
+			ContinueOnError="true"/>-->
+
+    <Message Text="Weston Build: Removing $(DeployUncPath2)" />
+
+    <!-- Remove all content from a folder whilst maintaining the target folder -->
+    <MSBuild.ExtensionPack.FileSystem.Folder Condition="Exists($(DeployUncPath2))" TaskAction="RemoveContent" Path="$(DeployUncPath2)"/>
+
+    <!--Deploy new build-->
+
+    <Message Text="Weston Build: Copying Over New Build" />
+
+    <Copy Condition="'$(BuildBreak)' != 'true'" SourceFiles="@(WebSiteFiles)"
+				DestinationFiles="@(WebSiteFiles->'$(DeployUncPath2)\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+    <BuildStep TeamFoundationServerUrl="$(TeamFoundationServerUrl)" BuildUri="$(BuildUri)" Id="$(StepId)" Status="Succeeded" />
+
+    <ItemGroup>
+      <Recipient Include="Janus.Lin@WestonSolutions.com"/>
+      <Recipient Include="Steve.Zelonis@WestonSolutions.com"/>
+      <Recipient Include="Julia.Taylor@WestonSolutions.com"/>
+    </ItemGroup>
+
+    <MSBuild.ExtensionPack.Communication.Email TaskAction="Send"
+			Subject="HelloAppPart Dev Build Done" SmtpServer="smtp.corp.rfweston.com"
+			MailFrom="nospam@WestonSolutions.com" MailTo="@(Recipient)" Body="." />
+
+    <OnError ExecuteTargets="MarkBuildStepAsFailed" />
+
+  </Target>
+
+</Project>
